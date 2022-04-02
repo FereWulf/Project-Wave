@@ -19,7 +19,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 		class UStaticMeshComponent* AIMesh;
 
+	UPROPERTY(VisibleAnywhere)
+		class USphereComponent* OrbComp;
+
 	ACharacter* Player;
+
+	float FloatDisplacement;
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -37,4 +42,7 @@ public:
 	void Death(FVector DeathInstigatorLocation, FName Bone);
 
 	void ClearRagdoll();
+
+	UFUNCTION()
+		void OnOverlapAction(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 };

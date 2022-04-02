@@ -19,14 +19,11 @@ public:
 
 	virtual void Secondary(APly* Player) override;
 
-	void AdieuTimer();
+	void DepleteSprayCounter();
 
 	virtual void Reload() override;
 
 	void ReloadImpl();
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
-		class UAnimMontage* FireAnimation;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 		class UParticleSystem* MuzzleParticles;
@@ -41,13 +38,19 @@ public:
 		FTimerHandle PrimaryTimer;
 
 	UPROPERTY()
-		FTimerHandle SpamTimer;
+		FTimerHandle SprayTimer;
 
 	UPROPERTY()
 		FTimerHandle ReloadTimer;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spray")
+		TArray<FVector2D> SprayCoords;
+
 	UPROPERTY()
-		bool bStopSpam;
+		int32 SprayCounter;
+
+	UPROPERTY()
+		bool bReloading;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		int32 FireRate;

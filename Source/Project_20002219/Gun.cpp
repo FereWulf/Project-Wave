@@ -5,9 +5,13 @@
 #include "Kismet/GameplayStatics.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Blueprint/UserWidget.h"
+#include "EngineUtils.h"
+
+#include "DrawDebugHelpers.h"
 
 #include "Ply.h"
 #include "AI.h"
+#include "XPOrb.h"
 #include "HealthComponent.h"
 #include "PlyMovementComponent.h"
 
@@ -23,38 +27,55 @@ AGun::AGun()
     KillVelocity = 3000.0f;
     bFullAuto = true;
     bIsADS = false;
+
+    SprayCounter = 0;
 }
 
 void AGun::Primary(APly* Player)
 {
-    if (Mag > 0 && !GetWorldTimerManager().IsTimerActive(SpamTimer)) {
-        bStopSpam = true;
+    if (Mag > 0) {
+        APlayerController* playerController = GetWorld()->GetFirstPlayerController();
 
-        FVector camLoc;
-        FRotator camRot;
+        int32 screenX;
+        int32 screenY;
+        playerController->GetViewportSize(screenX, screenY);
 
-        Player->Controller->GetPlayerViewPoint(camLoc, camRot);
+        screenX /= 2;
+        screenY /= 2;
 
-        FVector spread;
+        FVector2D spread = SprayCoords[SprayCounter];
+        float spreadAmount = 1.0f;
 
         if (Player->GetCharacterMovement()->IsFalling()) {
-            spread = FVector(FMath::FRandRange(-15000.0f, 15000.0f), FMath::FRandRange(-15000.0f, 15000.0f), 0.0f);
+            spread = FVector2D(FMath::FRandRange(-15000.0f, 15000.0f), FMath::FRandRange(-15000.0f, 15000.0f));
+            spreadAmount = 5.0f;
         }
         else {
-            FVector velocity = GetVelocity();
-            FRotator rotation = GetActorRotation();
-            velocity = rotation.UnrotateVector(velocity);
+            float speed = Player->GetVelocity().Size() / 300.0f;
 
-            spread = FVector(FMath::FRandRange(-1.0f, 1.0f) * velocity.X, FMath::FRandRange(-1.0f, 1.0f) * velocity.Y, 0.0f);
+            if (speed > 1) {
+                spreadAmount = speed;
+            } else {
+                spreadAmount = 1.0f;
+            }
         }
 
-        const FVector startTrace = camLoc;
-        const FVector direction = camRot.Vector();
-        const FVector endTrace = (startTrace + direction * Range) + spread;
+        FVector direction;
+        FVector startTrace;
+        playerController->DeprojectScreenPositionToWorld(screenX + spread.X, screenY + spread.Y, startTrace, direction);
+
+        FVector endTrace = (startTrace + direction * Range) * spreadAmount;
+
+        DrawDebugLine(GetWorld(), startTrace + direction * 50, endTrace, FColor(50, 50, 50, 255), false, 1.0f, 0, 1);
 
         FCollisionQueryParams queryParams;
         queryParams.AddIgnoredActor(this);
         queryParams.AddIgnoredActor(Player);
+        
+        for (TActorIterator<AXPOrb> ActorItr(GetWorld()); ActorItr; ++ActorItr)
+        {
+            queryParams.AddIgnoredActor(*ActorItr);
+        }
 
         FHitResult hit;
 
@@ -66,13 +87,6 @@ void AGun::Primary(APly* Player)
 
             FName bone = hit.BoneName;
 
-            UPhysicalMaterial* material = hit.PhysMaterial.Get();
-
-            if (material) {
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, material->GetFName().ToString());
-                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%f"), material->Density));
-            }
-
             if (ImpactParticles) {
                 UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, FTransform(hit.ImpactNormal.Rotation(), hit.ImpactPoint));
             }
@@ -82,7 +96,7 @@ void AGun::Primary(APly* Player)
 
                 if (target->HealthComponent->Health > 0)
                 {
-                    FVector deathInstigatorLocation = camRot.Vector() * KillVelocity;
+                    FVector deathInstigatorLocation = direction * KillVelocity;
 
                     target->HealthComponent->TakeHealth(Damage * Player->DamageMultiplier, target, deathInstigatorLocation, bone);
                 }
@@ -90,20 +104,14 @@ void AGun::Primary(APly* Player)
         }
 
         if (MuzzleParticles) {
-            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleParticles, FTransform(GetActorLocation() + camRot.Vector() * 20)); // Find tranform bone.
-        }
-
-        if (FireAnimation != NULL)
-        {
-            UAnimInstance* AnimInstance = NULL;
-            if (AnimInstance != NULL) {
-                AnimInstance->Montage_Play(FireAnimation, 1.f);
-            }
+            UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleParticles, FTransform(GetActorLocation() + direction * 20)); // Find tranform bone.
         }
 
         Player->CameraManager->StartCameraShake(CameraShake, ShakeFloat);
 
-        Mag = Mag - 1;
+        Mag -= 1;
+
+        SprayCounter += 1;
 
         if (bFullAuto) {
             GetWorld()->GetTimerManager().SetTimer(PrimaryTimer, Player, &APly::Primary, 5.0f / (FireRate * Player->FireRateMultiplier), false);
@@ -113,16 +121,17 @@ void AGun::Primary(APly* Player)
 
 void AGun::StopPrimary(APly* Player)
 {
-    if (bStopSpam) {
-        GetWorld()->GetTimerManager().SetTimer(SpamTimer, this, &AGun::AdieuTimer, 1.0f / (FireRate * Player->FireRateMultiplier), false);
-        bStopSpam = false;
-    }
-
+    GetWorld()->GetTimerManager().SetTimer(SprayTimer, this, &AGun::DepleteSprayCounter, 0.03f, true);
     GetWorld()->GetTimerManager().ClearTimer(PrimaryTimer);
 }
 
-void AGun::AdieuTimer() {
-    GetWorld()->GetTimerManager().ClearTimer(SpamTimer);
+void AGun::DepleteSprayCounter() { 
+    if (SprayCounter == 0) {
+        GetWorld()->GetTimerManager().ClearTimer(SprayTimer);
+    }
+    else {
+        SprayCounter -= 1;
+    }
 }
 
 void AGun::Secondary(APly* Player)
@@ -146,7 +155,8 @@ void AGun::Secondary(APly* Player)
 }
 
 void AGun::Reload() {
-    if (Mag != MaxMagSize) {
+    if (Mag != MaxMagSize && bReloading == false) {
+        bReloading = true;
         GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ReloadImpl, 1.0f, false);
     }
 }
@@ -154,5 +164,8 @@ void AGun::Reload() {
 void AGun::ReloadImpl() {
     Mag = MaxMagSize;
 
+    SprayCounter = 0;
+
+    bReloading = false;
     GetWorld()->GetTimerManager().ClearTimer(ReloadTimer);
 }

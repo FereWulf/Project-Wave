@@ -4,9 +4,5 @@
 
 void AAISpawner::Spawn()
 {
-    FRotator AIRotation(0, 0, 0);
-
-    FActorSpawnParameters AISpawnInfo;
-
-    AAI* AISpawn = GetWorld()->SpawnActor<AAI>(AAI::StaticClass(), GetActorLocation(), AIRotation, AISpawnInfo);
+    GetWorld()->SpawnActor<AAI>(AIClass, GetActorLocation() + FVector(0, 0, 90), GetActorRotation());
 }

@@ -23,6 +23,9 @@ APly::APly(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitialize
 
     RootComponent = GetCapsuleComponent();
 
+    PlyEyeHeight = 160.0f;
+    PlyHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
+
     PlyMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("PlyMesh"));
     PlyMesh->SetupAttachment(RootComponent);
     PlyMesh->SetCollisionObjectType(ECC_WorldStatic);
@@ -33,7 +36,7 @@ APly::APly(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitialize
     PlyMesh->CastShadow = true;
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
-    CameraComponent->SetRelativeLocation(FVector(0.0f, 30.0f, 160.0f));
+    CameraComponent->SetRelativeLocation(FVector(0.0f, 30.0f, PlyEyeHeight));
     CameraComponent->SetRelativeRotation(FRotator(0.0f, 90.0f, 0.0f));
     CameraComponent->SetupAttachment(PlyMesh);
     CameraComponent->bUsePawnControlRotation = true;
@@ -56,9 +59,6 @@ APly::APly(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitialize
     // Upgrade Multipliers
     DamageMultiplier = 1.0f;
     FireRateMultiplier = 1.0f;
-
-    PlyEyeHeight = BaseEyeHeight;
-    PlyHeight = GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight();
 }
 
 void APly::BeginPlay()
@@ -68,8 +68,6 @@ void APly::BeginPlay()
     PController = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 
     CameraManager = Cast<APlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
-    CameraManager->ViewPitchMax = 89.0f;
-    CameraManager->ViewPitchMin = -80.0f;
 
     if (Crosshair) {
         CrosshairInstance = CreateWidget<UUserWidget>(PController, Crosshair);
@@ -289,7 +287,11 @@ void APly::Death(FVector DeathInstigatorLocation, FName Bone) {
         UIBarsInstance->RemoveFromViewport();
     }
 
-    GetWorld()->GetTimerManager().SetTimer(GameOverTimer, this, &APly::GameOver, 3.0f, false);
+    if (LevelComponent->UpgradesUIInstance) {
+        LevelComponent->UpgradesUIInstance->RemoveFromViewport();
+    }
+
+    GetWorld()->GetTimerManager().SetTimer(GameOverTimer, this, &APly::GameOver, 1.0f, false);
 }
 
 void APly::GameOver() {
@@ -300,14 +302,6 @@ void APly::GameOver() {
 
     PController->SetInputMode(FInputModeUIOnly());
     PController->bShowMouseCursor = true;
-
-    /*AController* controller = this->GetController();
-
-    Destroy();
-
-    GetWorld()->GetAuthGameMode()->RestartPlayer(controller);
-
-    GetWorld()->GetTimerManager().ClearTimer(RespawnTimer);*/
 
     PController->SetPause(true);
 }

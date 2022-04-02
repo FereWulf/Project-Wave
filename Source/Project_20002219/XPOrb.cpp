@@ -1,6 +1,6 @@
 #include "XPOrb.h"
 
-#include "Components/SphereComponent.h"
+#include "Components/SphereComponent.h" 
 
 #include "Ply.h"
 #include "LevelComponent.h"
@@ -10,13 +10,14 @@ AXPOrb::AXPOrb()
 	PrimaryActorTick.bCanEverTick = true;
 
 	OrbMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MeshComponent"));
+	OrbMesh->SetCollisionProfileName(TEXT("OverlapAll"));
 	OrbMesh->SetCustomDepthStencilValue(255);
 
 	RootComponent = OrbMesh;
 
 	OrbComp = CreateDefaultSubobject<USphereComponent>("CollisionSphere");
 	OrbComp->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-	OrbComp->SetSphereRadius(100.0f);
+	OrbComp->SetSphereRadius(400.0f);
 	OrbComp->SetupAttachment(RootComponent);
 
 	OrbComp->OnComponentBeginOverlap.AddDynamic(this, &AXPOrb::OrbBeginOverlap);

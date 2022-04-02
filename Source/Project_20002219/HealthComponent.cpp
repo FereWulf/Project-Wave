@@ -27,8 +27,6 @@ void UHealthComponent::TakeHealth(int32 Damage, AActor* Inflictor, FVector Death
 	} else if (Inflictor->IsA<APly>()) {
 		GetWorld()->GetTimerManager().SetTimer(RegenTimer, this, &UHealthComponent::Regen, 3.0f - RegenUpgrade, false);
 	}
-
-	GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("%d"), Health));
 }
 
 void UHealthComponent::Regen()

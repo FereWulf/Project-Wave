@@ -10,5 +10,8 @@ class PROJECT_20002219_API AAISpawner : public AActor
 	GENERATED_BODY()
 
 public:	
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+		TSubclassOf<class AAI> AIClass;
+
 	void Spawn();
 };

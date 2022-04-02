@@ -21,11 +21,25 @@ public:
 
 	void AddXP();
 
+	void DisplayUpgrades();
+
 	UFUNCTION(BlueprintPure, Category = "Level")
-		TArray<FString> DisplayUpgrades();
+		FString DisplayFirstIndex();
+
+	UFUNCTION(BlueprintPure, Category = "Level")
+		FString DisplaySecondIndex();
+
+	UFUNCTION(BlueprintPure, Category = "Level")
+		FString DisplayThirdIndex();
 
 	UFUNCTION(BlueprintPure, Category = "Level")
 		float DisplayXP();
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class UUserWidget> UpgradesUI;
+
+	UPROPERTY()
+		class UUserWidget* UpgradesUIInstance;
 
 	int32 Levels;
 

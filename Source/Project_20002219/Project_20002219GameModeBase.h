@@ -20,13 +20,13 @@ public:
 		class UAIWaveComponent* AIWaveComponent;
 
 	UPROPERTY()
-		class AAISpawner* Spawner;
+		TArray<class AAISpawner*> Spawners;
 
 	void StartTimer();
 
 	void NextWave();
 
-	void AddKills();
+	void AddKills(int32 Value);
 
 	void SpawnAI();
 

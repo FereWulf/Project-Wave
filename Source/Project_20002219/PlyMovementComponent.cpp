@@ -2,6 +2,7 @@
 
 #include "GameFramework/Character.h"
 #include "Components/CapsuleComponent.h"
+#include "Camera/CameraComponent.h"
 
 #include "StaminaComponent.h"
 #include "Ply.h"
@@ -143,7 +144,7 @@ void UPlyMovementComponent::CrouchImpl(float DeltaTime, float EyeHeight, float H
     const FVector startTrace = GetActorLocation();
     float traceHeight = 88.0f;
     if (bIsCrouching) {
-        traceHeight = 206.0f - Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
+        traceHeight = 176.0f - Player->GetCapsuleComponent()->GetScaledCapsuleHalfHeight();
     }
     const FVector endTrace = FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + traceHeight);
 
@@ -162,11 +163,12 @@ void UPlyMovementComponent::CrouchImpl(float DeltaTime, float EyeHeight, float H
         StopCrouch();
     }
 
-    const float TargetBEH = bIsCrouching ? Player->CrouchedEyeHeight : EyeHeight;
+    const float TargetBEH = bIsCrouching ? EyeHeight/1.25 : EyeHeight;
 
-    const float TargetCapsuleSize = bIsCrouching ? CrouchedHalfHeight : Height;
+    const float TargetCapsuleSize = bIsCrouching ? 56.0f : Height;
 
     Player->BaseEyeHeight = FMath::FInterpTo(Player->BaseEyeHeight, TargetBEH, DeltaTime, 10.0f);
+    Player->CameraComponent->SetRelativeLocation(FVector(0.0f, 30.0f, Player->BaseEyeHeight));
 
     Player->GetCapsuleComponent()->SetCapsuleHalfHeight(FMath::FInterpTo(Player->GetCapsuleComponent()->GetUnscaledCapsuleHalfHeight(), TargetCapsuleSize, DeltaTime, 5.0f), true);
 
