@@ -19,7 +19,6 @@ AGun::AGun()
 {
     FireRate = 50;
     Damage = 50;
-    Mobility = 0.5;
     Range = 30000;
     Mag = 30;
     MaxMagSize = 30;
@@ -33,7 +32,7 @@ AGun::AGun()
 
 void AGun::Primary(APly* Player)
 {
-    if (Mag > 0) {
+    if (Mag > 0 && !bReloading) {
         APlayerController* playerController = GetWorld()->GetFirstPlayerController();
 
         int32 screenX;

@@ -45,9 +45,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
 		float JumpSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Movement")
-		float SpeedMultiplier;
-
 	void StartCrouch();
 
 	void StopCrouch();

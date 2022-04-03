@@ -22,7 +22,7 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class USphereComponent* OrbComp;
 
-	ACharacter* Player;
+	class APly* Player;
 
 	float FloatDisplacement;
 

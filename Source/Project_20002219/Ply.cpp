@@ -91,7 +91,7 @@ void APly::Tick(float DeltaTime)
         CrouchImpl(DeltaTime);
 
         if (CurrentItem && CurrentItem->bIsADS) {
-            GunMesh->SetRelativeLocation(FMath::VInterpTo(GunMesh->GetRelativeLocation(), FVector(CurrentItem->ItemLocation.X - CurrentItem->ADSLocation.X, 00.0f, CurrentItem->ItemLocation.Z - CurrentItem->ADSLocation.Z), DeltaTime, 10.0f));
+            GunMesh->SetRelativeLocation(FMath::VInterpTo(GunMesh->GetRelativeLocation(), FVector(CurrentItem->ItemLocation.X - CurrentItem->ADSLocation.X, CurrentItem->ItemLocation.Y - CurrentItem->ADSLocation.Y, CurrentItem->ItemLocation.Z - CurrentItem->ADSLocation.Z), DeltaTime, 10.0f));
         }
         else {
             FVector camLoc;
@@ -102,7 +102,7 @@ void APly::Tick(float DeltaTime)
             FVector velocity = GetVelocity();
             velocity = camRot.UnrotateVector(velocity) * 0.005;
 
-            GunMesh->SetRelativeLocation(FMath::VInterpTo(GunMesh->GetRelativeLocation(), FVector(20.0f, 10.0f, -10.0f) - velocity, DeltaTime, 10.0f));
+            GunMesh->SetRelativeLocation(FMath::VInterpTo(GunMesh->GetRelativeLocation(), FVector(30.0f, 10.0f, -10.0f) - velocity, DeltaTime, 10.0f));
         }
     }
 
@@ -216,18 +216,15 @@ void APly::DropItem()
 
         GunMesh->SetSkeletalMesh(0);
 
-        CurrentItem->SetActorHiddenInGame(false);
-
         FVector camLoc;
         FRotator camRot;
 
         Controller->GetPlayerViewPoint(camLoc, camRot);
 
-        const FVector direction = camRot.Vector();
+        GetWorld()->SpawnActor<AItem>(CurrentItem->GetClass(), camLoc + camRot.Vector() * 50, camRot);
+        CurrentItem->Destroy();
 
-        CurrentItem->SetActorLocation(camLoc);
-
-        CurrentItem->CapsuleComponent->SetAllPhysicsLinearVelocity(300 * camRot.Vector(), false);
+        CurrentItem->MeshComponent->SetAllPhysicsLinearVelocity(300 * camRot.Vector(), false);
 
         ItemInventory.RemoveSingle(CurrentItem);
         CurrentItem = NULL;

@@ -4,17 +4,14 @@ AItem::AItem()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	CapsuleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("CapsuleComponent"));
-	CapsuleComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-	CapsuleComponent->SetMobility(EComponentMobility::Movable);
-	CapsuleComponent->WakeRigidBody();
-	CapsuleComponent->SetSimulatePhysics(true);
-
 	MeshComponent = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("MeshComponent"));
-	MeshComponent->SetupAttachment(CapsuleComponent);
+	MeshComponent->SetMobility(EComponentMobility::Movable);
+	MeshComponent->SetCollisionProfileName(TEXT("BlockAll"));
 	MeshComponent->SetCustomDepthStencilValue(255);
+	MeshComponent->WakeRigidBody();
+	MeshComponent->SetSimulatePhysics(true);
 
-	RootComponent = CapsuleComponent;
+	RootComponent = MeshComponent;
 }
 
 void AItem::PickedUp()

@@ -47,9 +47,7 @@ public:
 
 	int32 XPCap;
 
-	float FireRateAdjust;
-
-	float DamageAdjust;
+	float SpeedMultiplier;
 
 	TArray<FString> Upgrades;
 

@@ -28,6 +28,10 @@ AAI::AAI()
 	AIMesh->bCastDynamicShadow = true;
 	AIMesh->CastShadow = true;
 
+	FCollisionResponseContainer mesh_collision_response;
+	mesh_collision_response.SetResponse(ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	AIMesh->SetCollisionResponseToChannels(mesh_collision_response);
+
 	GetCharacterMovement()->MaxWalkSpeed = 300.0f;
 
 	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
@@ -45,7 +49,7 @@ void AAI::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	Player = Cast<APly>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	SpawnDefaultController();
 
@@ -58,7 +62,7 @@ void AAI::Tick(float DeltaTime)
 
 	AAIController* aiController = Cast<AAIController>(GetController());
 
-	if (HealthComponent->Health > 0) {
+	if (Player->HealthComponent->Health > 0) {
 		aiController->MoveToActor(Player, 10.0f, true);
 	}
 

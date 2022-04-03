@@ -14,8 +14,6 @@ UPlyMovementComponent::UPlyMovementComponent()
 
     Sensitivity = 1;
 
-    SpeedMultiplier = 1.0f;
-
     SprintSpeed = 600.0f;
     CrouchSpeed = 200.0f;
     WalkSpeed = 300.0f;
@@ -57,10 +55,6 @@ void UPlyMovementComponent::Turn(float Value)
             StrafeThreshhold = true;
         }
 
-        if (Player->CurrentItem) {
-            value = value * Player->CurrentItem->Mobility;
-        }
-
         if (bKeyHeldS) {
             value = -value;
         }
@@ -89,30 +83,20 @@ void UPlyMovementComponent::MoveForward(float Value)
 
     FVector direction = FRotationMatrix(yawRotation).GetScaledAxis(EAxis::X);
 
-    if (!IsFalling()) {
-        if (Player->CurrentItem) {
-            Value = Value * Player->CurrentItem->Mobility;
-        }
-    }
-    else {
+    if (IsFalling()) {
         Value = Value * 0.2;
     }
-    Player->AddMovementInput(direction, Value * SpeedMultiplier);
+    Player->AddMovementInput(direction, Value);
 }
 
 void UPlyMovementComponent::MoveRight(float Value)
 {
     FVector direction = FRotationMatrix(Player->Controller->GetControlRotation()).GetScaledAxis(EAxis::Y);
 
-    if (!IsFalling()) {
-        if (Player->CurrentItem) {
-            Value = Value * Player->CurrentItem->Mobility;
-        }
-    }
-    else {
+    if (IsFalling()) {
         Value = Value * 0.2;
     }
-    Player->AddMovementInput(direction, Value * SpeedMultiplier);
+    Player->AddMovementInput(direction, Value);
 }
 
 void UPlyMovementComponent::StartCrouch()

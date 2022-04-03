@@ -31,9 +31,6 @@ public:
 	void Unfocused();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-		float Mobility;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		bool bIsADS;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
@@ -44,9 +41,6 @@ public:
 
 	UPROPERTY()
 		FVector ItemLocation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
-		class UStaticMeshComponent* CapsuleComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 		class USkeletalMeshComponent* MeshComponent;

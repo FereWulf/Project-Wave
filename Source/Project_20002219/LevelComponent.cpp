@@ -17,6 +17,8 @@ ULevelComponent::ULevelComponent()
 	XP = 0;
 	XPCap = 4;
 
+	SpeedMultiplier = 1.0f;
+
 	FString Arr[5] = {TEXT("Health"), TEXT("RegenTimer"), TEXT("Damage"), TEXT("Fire-Rate"), TEXT("Speed")};
 	Upgrades.Append(Arr, UE_ARRAY_COUNT(Arr));
 }
@@ -46,34 +48,39 @@ void ULevelComponent::ChosenUpgrade(APly* player, int32 Slot)
 
 	FString upgrade = DisplayList[Slot];
 	if (upgrade == "Health") {
-		player->HealthComponent->MaxHealth += 10;
-		player->HealthComponent->Health += 10;
+		player->HealthComponent->MaxHealth += 25;
+		player->HealthComponent->Health += 25;
 
 		if (player->HealthComponent->MaxHealth == 300) {
 			DisplayList.Remove("Health");
 		}
 	} else if (upgrade == "RegenTimer") {
-		player->HealthComponent->RegenUpgrade += 0.1f;
+		player->HealthComponent->RegenUpgrade += 0.125f;
 
 		if (player->HealthComponent->RegenUpgrade == 2.0f) {
 			DisplayList.Remove("RegenTimer");
 		}
 	} else if (upgrade == "Damage") {
-		player->DamageMultiplier += 0.1f;
+		player->DamageMultiplier += 0.125f;
 
-		if (player->DamageMultiplier == 3.0f) {
+		if (player->DamageMultiplier == 2.0f) {
 			DisplayList.Remove("Damage");
 		}
 	} else if (upgrade == "Fire-Rate") {
-		player->FireRateMultiplier += 0.1f;
+		player->FireRateMultiplier += 0.125f;
 
 		if (player->FireRateMultiplier == 2.0f) {
 			DisplayList.Remove("Fire-Rate");
 		}
 	} else if (upgrade == "Speed") {
-		player->MovementComponent->SpeedMultiplier += 0.1f;
+		SpeedMultiplier += 0.125f;
 
-		if (player->MovementComponent->SpeedMultiplier == 3.0f) {
+		player->MovementComponent->SprintSpeed *= 1.125f;
+		player->MovementComponent->CrouchSpeed *= 1.125f;
+		player->MovementComponent->WalkSpeed *= 1.125f;
+		player->MovementComponent->MaxWalkSpeed = player->MovementComponent->WalkSpeed;
+
+		if (SpeedMultiplier == 2.0f) {
 			DisplayList.Remove("Speed");
 		}
 	}
