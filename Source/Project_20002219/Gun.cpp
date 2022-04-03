@@ -153,10 +153,10 @@ void AGun::Secondary(APly* Player)
     }
 }
 
-void AGun::Reload() {
+void AGun::Reload(APly* Player) {
     if (Mag != MaxMagSize && bReloading == false) {
         bReloading = true;
-        GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ReloadImpl, 1.0f, false);
+        GetWorld()->GetTimerManager().SetTimer(ReloadTimer, this, &AGun::ReloadImpl, 1.0f/Player->ReloadSpeed, false);
     }
 }
 

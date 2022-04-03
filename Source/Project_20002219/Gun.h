@@ -21,7 +21,7 @@ public:
 
 	void DepleteSprayCounter();
 
-	virtual void Reload() override;
+	virtual void Reload(APly* Player) override;
 
 	void ReloadImpl();
 

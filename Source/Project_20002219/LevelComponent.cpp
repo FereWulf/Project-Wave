@@ -19,7 +19,7 @@ ULevelComponent::ULevelComponent()
 
 	SpeedMultiplier = 1.0f;
 
-	FString Arr[5] = {TEXT("Health"), TEXT("RegenTimer"), TEXT("Damage"), TEXT("Fire-Rate"), TEXT("Speed")};
+	FString Arr[6] = {TEXT("Health"), TEXT("RegenTimer"), TEXT("Damage"), TEXT("Fire-Rate"), TEXT("Reload Speed"), TEXT("Speed")};
 	Upgrades.Append(Arr, UE_ARRAY_COUNT(Arr));
 }
 
@@ -71,6 +71,12 @@ void ULevelComponent::ChosenUpgrade(APly* player, int32 Slot)
 
 		if (player->FireRateMultiplier == 2.0f) {
 			DisplayList.Remove("Fire-Rate");
+		}
+	} else if (upgrade == "Reload Speed") {
+		player->ReloadSpeed += 0.25f;
+
+		if (player->ReloadSpeed == 3.0f) {
+			DisplayList.Remove("Reload Speed");
 		}
 	} else if (upgrade == "Speed") {
 		SpeedMultiplier += 0.125f;

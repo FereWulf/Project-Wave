@@ -6,6 +6,7 @@ UAIWaveComponent::UAIWaveComponent()
 	AINum = 8;
 	AISpawned = 0;
 	Kills = 0;
+	AICap = 0;
 }
 
 FText UAIWaveComponent::DisplayWave()

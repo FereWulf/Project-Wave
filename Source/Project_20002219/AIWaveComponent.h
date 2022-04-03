@@ -22,6 +22,8 @@ public:
 	
 	int32 Kills;
 
+	int32 AICap;
+
 	UFUNCTION(BlueprintPure, Category = "AI")
 		FText DisplayWave();
 

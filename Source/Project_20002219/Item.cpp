@@ -38,7 +38,7 @@ void AItem::Secondary(APly* Player)
 
 }
 
-void AItem::Reload()
+void AItem::Reload(APly* Player)
 {
 
 }

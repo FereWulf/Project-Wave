@@ -59,6 +59,7 @@ APly::APly(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitialize
     // Upgrade Multipliers
     DamageMultiplier = 1.0f;
     FireRateMultiplier = 1.0f;
+    ReloadSpeed = 1.0f;
 }
 
 void APly::BeginPlay()
@@ -256,7 +257,7 @@ void APly::Secondary() {
 
 void APly::Reload() {
     if (CurrentItem) {
-        CurrentItem->Reload();
+        CurrentItem->Reload(this);
     }
 }
 

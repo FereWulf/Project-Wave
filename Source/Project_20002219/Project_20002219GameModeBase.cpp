@@ -46,6 +46,7 @@ void AProject_20002219GameModeBase::AddKills(int32 Value)
 {
     AIWaveComponent->Kills += Value;
     WaveKills += 1;
+    AIWaveComponent->AICap -= 1;
 
     if (WaveKills >= AIWaveComponent->AINum) {
         NextWave();
@@ -57,8 +58,9 @@ void AProject_20002219GameModeBase::SpawnAI()
     if (AIWaveComponent->AISpawned < AIWaveComponent->AINum) {
         for (size_t i = 0; i < Spawners.Num(); i++)
         {
-            if (AIWaveComponent->AISpawned < AIWaveComponent->AINum) {
+            if (AIWaveComponent->AISpawned < AIWaveComponent->AINum && AIWaveComponent->AICap < 25) {
                 AIWaveComponent->AISpawned += 1;
+                AIWaveComponent->AICap += 1;
 
                 AAISpawner* Spawner = Spawners[i];
                 Spawner->Spawn();

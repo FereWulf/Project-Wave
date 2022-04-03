@@ -108,6 +108,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
 		float FireRateMultiplier;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
+		float ReloadSpeed;
+
 
 public:
 	// Inventory

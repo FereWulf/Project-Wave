@@ -23,7 +23,7 @@ public:
 
 	virtual void Secondary(APly* Player);
 
-	virtual void Reload();
+	virtual void Reload(APly* Player);
 
 	// Interact
 	void Focused();
