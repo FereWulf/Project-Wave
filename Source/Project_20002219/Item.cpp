@@ -11,6 +11,10 @@ AItem::AItem()
 	MeshComponent->WakeRigidBody();
 	MeshComponent->SetSimulatePhysics(true);
 
+	FCollisionResponseContainer collision_response;
+	collision_response.SetResponse(ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	MeshComponent->SetCollisionResponseToChannels(collision_response);
+
 	RootComponent = MeshComponent;
 }
 

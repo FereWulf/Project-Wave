@@ -93,7 +93,6 @@ void AAI::OnOverlapAction(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 
 void AAI::Death(FVector DeathInstigatorLocation, FName Bone) {
 	FCollisionResponseContainer collision_response;
-	collision_response.SetResponse(ECC_Visibility, ECollisionResponse::ECR_Ignore);
 	collision_response.SetResponse(ECC_Pawn, ECollisionResponse::ECR_Overlap);
 	AIMesh->SetCollisionResponseToChannels(collision_response);
 
